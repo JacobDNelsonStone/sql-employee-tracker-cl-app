@@ -1,6 +1,6 @@
 const mysql = require('mysql2');
 const ctable = require('console.table');
-const inquirer = reqiure('inquirer');
+const inquirer = require('inquirer');
 
 const db = mysql.createConnection(
   {
@@ -25,21 +25,30 @@ function mainQuestions() {
       type: "list",
       message: "What would you like to do?",
       choices: [
-        "Add department",
-        "Add role",
-        "Add employee",
         "View departments",
         "View roles",
         "View employees",
+        "Add role",
+        "Add employee",
+        "Add department",
         "Update employee role",
         "Quit"
       ],
       name: "answer"
     })
     .then(function (data) {
-      console.log("You entered: " + data.answer);
+      console.log(`Your selection: ${data.answer}`);
 
       switch (data.answer) {
+        case "View departments":
+          viewDepartments();
+          break;
+        case "View roles":
+          viewRoles();
+          break;
+        case "View employees":
+          viewEmployees();
+          break;
         case "Add department":
           addDepartment();
           break;
@@ -49,15 +58,6 @@ function mainQuestions() {
         case "Add employee":
           addEmployee();
           break;
-        case "View departments":
-          viewDepartment();
-          break;
-        case "View roles":
-          viewRoles();
-          break;
-        case "View employees":
-          viewEmployees();
-          break;
         case "Update employee role":
           updateEmployee();
           break;
@@ -66,3 +66,11 @@ function mainQuestions() {
       }
     });
 }
+
+function viewDepartments(){
+  db.query('SELECT * FROM department', function (err, res) {
+    console.log(res);
+    console.table(res);
+    mainQuestions();
+  });
+};
