@@ -5,11 +5,11 @@ require('dotenv').config();
 
 const db = mysql.createConnection(
   {
-    host: DB_NAME,
+    host: 'localhost',
     // MySQL username,
-    user: DB_USER,
+    user: process.env.DB_USER,
     // MySQL password
-    password: DB_PASSWORD,
+    password: process.env.DB_PASSWORD,
     database: 'employeedata_db'
   },
   console.log(`Connected to the employeedata_db database.`)
@@ -75,19 +75,19 @@ function viewDepartments() {
       console.log(err);
       mainQuestions();
     }
-    console.log(res);
+    // console.log(res);
     console.table(res);
     mainQuestions();
   });
 };
 
 function viewRoles() {
-  db.query('SELECT * FROM roles', (err, res) => {
+  db.query('SELECT * FROM role', (err, res) => {
     if (err) {
       console.log(err);
       mainQuestions();
     }
-    console.log(res);
+    // console.log(res);
     console.table(res);
     mainQuestions();
   });
@@ -99,7 +99,7 @@ function viewEmployees() {
       console.log(err);
       mainQuestions();
     }
-    console.log(res);
+    // console.log(res);
     console.table(res);
     mainQuestions();
   });
@@ -107,20 +107,20 @@ function viewEmployees() {
 
 function addDepartment() {
 
-  inquirer.prompt({
+  inquirer.prompt([{
     type: 'input',
     message: 'Please enter the name for the new department:',
     name: 'newDept'
-  }).then((answer) => {
+  }]).then((answer) => {
 
-    db.query(`INSERT INTO department (dept_name) VALUES (${answer.newDept})`, function (err, res) {
+    db.query(`INSERT INTO department (dept_name) VALUES ('${answer.newDept}')`, function (err, res) {
       if (err) {
         console.log(err);
         mainQuestions();
       };
       console.log(`Added ${answer.newDept} to the database.`);
       console.table(res);
-      mainQuestions();
+      viewDepartments();
     });
   })
 };
@@ -143,13 +143,13 @@ function addRole() {
       name: 'newRoleDeptId'
     }
   ]).then((answer) => {
-    db.query(`INSERT INTO role ( title, salary, department_id ) VALUES (${answer.newRoleTitle}, ${answer.newRoleSalary}, ${answer.newRoleDeptId})`, (err, res) => {
+    db.query(`INSERT INTO role ( title, salary, department_id ) VALUES ('${answer.newRoleTitle}', ${answer.newRoleSalary}, ${answer.newRoleDeptId})`, (err, res) => {
       if (err) {
         console.log(err);
       }
       console.log(`Added ${answer.newRoleTitle} to the database.`);
       console.table(res);
-      mainQuestions();
+      viewRoles();
     })
   });
 };
@@ -177,13 +177,13 @@ function addEmployee() {
       name: 'newEmpManId'
     }
   ]).then((answers) => {
-    db.query(`INSERT INTO employee ( first_name, last_name, role_id, manager_id ) VALUES (${answers.newEmpFirstName}, ${answers.newEmpLastName}, ${answers.newEmpRoleId}, ${answers.newEmpManId})`, function (err, res) {
+    db.query(`INSERT INTO employee ( first_name, last_name, role_id, manager_id ) VALUES ('${answers.newEmpFirstName}', '${answers.newEmpLastName}', ${answers.newEmpRoleId}, ${answers.newEmpManId})`, (err, res) => {
       if (err) {
         console.log(err);
       }
       console.log(`Added ${answers.newEmpFirstName} ${answers.newEmpLastName} to the database.`);
       console.table(res);
-      mainQuestions();
+      viewEmployees();
     });
   });
 };
@@ -193,7 +193,7 @@ function updateEmployee() {
     if (err) {
       console.log(err);
     }
-    console.log(res);
+    // console.log(res);
     console.table(res);
 
     inquirer.prompt([
@@ -202,7 +202,6 @@ function updateEmployee() {
         message: 'Please enter the id number of the employee you would like to update:',
         name: 'updateEmpId'
       },
-
       {
         title: 'input',
         message: 'Please enter the new role id of the employee you would like to update:',
@@ -214,8 +213,8 @@ function updateEmployee() {
           console.log(err);
         }
         console.log(`Updated employee ${answers.updateEmpId}'s role.`);
-        console.table(res);
-        mainQuestions();
+        // console.table(res);
+        viewEmployees();
       });
     });
   });
